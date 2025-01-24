@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { LeadSchema, leadSchema } from "@/lib/dtos";
 import { createLead } from "@/api/chatService";
+import { getCurrentLocation } from "@/lib/utils";
 
 export interface Message {
   sender: "user" | "bot";
@@ -65,16 +66,22 @@ export default function ChatBubbleDialog() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const onSubmit = (data: LeadSchema) => {
-    createLead(data)
-      .then(() => {
-        console.log("Form submitted with data:", JSON.stringify(data));
-        localStorage.setItem("leadData", JSON.stringify(data));
-      })
-      .catch((error) => {
-        console.error("Error submitting form:", error);
-      });
-    setFormSubmitted(true);
+  const onSubmit = async (data: LeadSchema) => {
+    try {
+      const location = await getCurrentLocation();
+      const enrichedData = { ...data, location: String(location) };
+      createLead(enrichedData)
+        .then(() => {
+          console.log("Form submitted with data:", JSON.stringify(enrichedData));
+          localStorage.setItem("leadData", JSON.stringify(enrichedData));
+        })
+        .catch((error) => {
+          console.error("Error submitting form:", error);
+        });
+      setFormSubmitted(true);
+    } catch (error) {
+      console.error("Error getting location:", error);
+    }
   };
 
   return (
@@ -164,8 +171,8 @@ export default function ChatBubbleDialog() {
                   <div
                     key={index}
                     className={`my-2 p-3 rounded-lg w-fit ${msg.sender === "user"
-                        ? "bg-black text-white self-end"
-                        : "bg-gray-300 text-black self-start"
+                      ? "bg-black text-white self-end"
+                      : "bg-gray-300 text-black self-start"
                       }`}
                   >
                     {msg.text}

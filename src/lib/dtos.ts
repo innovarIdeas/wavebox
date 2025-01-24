@@ -6,7 +6,8 @@ export const leadSchema = z.object({
     message: "Must be at least 10 digits",
   }),
   email: z
-    .string().email()
+    .string().email(),
+  location: z.string().optional()
 });
 
 export type LeadSchema = z.infer<typeof leadSchema>;
