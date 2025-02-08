@@ -11,3 +11,20 @@ export const leadSchema = z.object({
 });
 
 export type LeadSchema = z.infer<typeof leadSchema>;
+
+export const createWaveboxMessageSchema = z.object({
+  organization_id: z.string(),
+  wavebox_chat_id: z.string(),
+  wavebox_lead_id: z.string(),
+  message: z.string()
+});
+
+export type CreateWaveboxMessageSchema = z.infer<typeof createWaveboxMessageSchema>;
+
+export const fetchMessagesSchema = z.object({
+  organization_id: z.string(),
+  wavebox_chat_id: z.string(),
+  wavebox_lead_id: z.string(),
+});
+
+export type FetchMessagesSchema = z.infer<typeof fetchMessagesSchema>;

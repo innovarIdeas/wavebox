@@ -22,14 +22,40 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { LeadSchema, leadSchema } from "@/lib/dtos";
-import { createLead } from "@/api/chatService";
+import {
+  CreateWaveboxMessageSchema,
+  FetchMessagesSchema,
+  LeadSchema,
+  leadSchema,
+} from "@/lib/dtos";
+import { createLead, fetchMessages, sendMessage } from "@/api/chatService";
 import { getCurrentLocation } from "@/lib/utils";
 
 export interface Message {
-  sender: "user" | "bot";
-  text: string;
+  message: string;
+  from: string;
 }
+
+type LeadType = {
+  id: string;
+  name: string;
+  email: string;
+  phone_number: string;
+  location: string;
+  organization: string;
+};
+
+type ChatType = {
+  id: string;
+  name: string;
+  organization_id: string;
+  lead_id: string;
+};
+
+type LeadData = {
+  lead: LeadType;
+  chat: ChatType;
+};
 
 export default function ChatBubbleDialog() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -48,19 +74,76 @@ export default function ChatBubbleDialog() {
     },
   });
 
-  const handleSend = (): void => {
-    if (inputValue.trim()) {
-      setMessages((prev) => [...prev, { sender: "user", text: inputValue }]);
-      setInputValue("");
+  const handleSend = async () => {
+    if (!inputValue.trim()) {
+      return;
+    }
 
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          { sender: "bot", text: "This is a bot response." },
-        ]);
-      }, 1000);
+    setMessages((prev) => [
+      ...prev,
+      {
+        message: inputValue.trim(),
+        from: "VISITOR",
+      },
+    ]);
+    setInputValue("");
+
+    const leadData: LeadData | undefined = JSON.parse(
+      localStorage.getItem("leadData") ?? ""
+    );
+
+    if (leadData == undefined || leadData instanceof String) {
+      window.location.reload();
+
+      return;
+    }
+
+    const messagePayload: CreateWaveboxMessageSchema = {
+      message: inputValue.trim(),
+      organization_id: leadData.chat.organization_id,
+      wavebox_chat_id: leadData.chat.id,
+      wavebox_lead_id: leadData.lead.id,
+    };
+
+    try {
+      const message = await sendMessage(messagePayload);
+      console.log("FROM FRONTEND: ", message);
+    } catch (error) {
+      console.error("ERROR FROM FRONTEND: ", error);
     }
   };
+
+  const handleFetchMessages = async () => {
+    const leadData: LeadData | undefined = JSON.parse(
+      localStorage.getItem("leadData") ?? ""
+    );
+
+    if (leadData == undefined || leadData instanceof String) {
+      window.location.reload();
+
+      return;
+    }
+
+    try {
+      const fetchMessagesPayload: FetchMessagesSchema = {
+        organization_id: leadData.chat.organization_id,
+        wavebox_chat_id: leadData.chat.id,
+        wavebox_lead_id: leadData.lead.id,
+      };
+      const messages = await fetchMessages(fetchMessagesPayload);
+
+      setMessages(messages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
+
+  useEffect(() => {
+    setInterval(() => {
+      handleFetchMessages();
+    }, 5000);
+  }, [])
+
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -70,17 +153,14 @@ export default function ChatBubbleDialog() {
     try {
       const location = await getCurrentLocation();
       const enrichedData = { ...data, location: String(location) };
-      createLead(enrichedData)
-        .then(() => {
-          console.log("Form submitted with data:", JSON.stringify(enrichedData));
-          localStorage.setItem("leadData", JSON.stringify(enrichedData));
-        })
-        .catch((error) => {
-          console.error("Error submitting form:", error);
-        });
+
+      const response = await createLead(enrichedData);
+
+      localStorage.setItem("leadData", JSON.stringify(response));
+
       setFormSubmitted(true);
     } catch (error) {
-      console.error("Error getting location:", error);
+      console.error("Error submitting form:", error);
     }
   };
 
@@ -170,12 +250,12 @@ export default function ChatBubbleDialog() {
                 messages.map((msg, index) => (
                   <div
                     key={index}
-                    className={`my-2 p-3 rounded-lg w-fit ${msg.sender === "user"
+                    className={`my-2 p-3 rounded-lg w-fit ${msg.from === "VISITOR"
                       ? "bg-black text-white self-end"
                       : "bg-gray-300 text-black self-start"
                       }`}
                   >
-                    {msg.text}
+                    {msg.message}
                   </div>
                 ))
               ) : (
