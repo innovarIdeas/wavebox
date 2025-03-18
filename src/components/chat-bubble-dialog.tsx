@@ -251,7 +251,7 @@ export default function ChatBubbleWidget() {
                     <div className="max-w-[18rem] w-fit">
                       <div className="flex items-baseline space-x-2">
                         {msg.from !== "VISITOR" && (
-                          <img src="/path-to-your-logo.png" alt="Logo" className="w-5 h-5 rounded-full" />
+                          <img src={schoolwave} alt="Logo" className="w-5 h-5 rounded-full" />
                         )}
                         <div
                           key={index}
