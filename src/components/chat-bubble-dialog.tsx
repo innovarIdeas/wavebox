@@ -20,6 +20,7 @@ import {
 import { LeadSchema, leadSchema } from "@/lib/dtos";
 import { createLead, fetchMessages, sendMessage } from "@/api/chatService";
 import { getCurrentLocation } from "@/lib/utils";
+import { schoolwave } from "@/assets";
 
 export interface Message {
   message: string;
@@ -162,7 +163,7 @@ export default function ChatBubbleWidget() {
         className="rounded-full fixed z-[9999] right-4 bottom-4 sm:right-6 sm:bottom-6 h-14 w-14 bg-blue-600 hover:bg-blue-700"
       >
         <img
-          src="./public/images/schoolwave.png"
+          src={schoolwave}
           alt="Schoolwave Logo"
           className="size-[24px]"
         />
@@ -173,7 +174,7 @@ export default function ChatBubbleWidget() {
           <div className="bg-blue-600 py-3 px-6 rounded-t-3xl text-white flex items-center justify-between">
             <div className="flex items-center gap-2">
               <img
-                src="./public/images/schoolwave.png"
+                src={schoolwave}
                 alt="Schoolwave Logo"
                 className="size-[24px]"
               />
