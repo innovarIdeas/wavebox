@@ -82,7 +82,7 @@ const playNotificationSound = async (audioElement: HTMLAudioElement | null) => {
 export default function ChatBubbleWidget() {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState("")
-  const [formSubmitted, setFormSubmitted] = useState(!!localStorage.getItem("leadData"))
+  const [formSubmitted, setFormSubmitted] = useState(!!sessionStorage.getItem("leadData"))
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [previousMessageCount, setPreviousMessageCount] = useState(0)
   const [isNewMessage, setIsNewMessage] = useState(false)
@@ -121,7 +121,7 @@ export default function ChatBubbleWidget() {
     setMessages((prev) => [...prev, { message: inputValue.trim(), from: "VISITOR"}])
     setInputValue("")
 
-    const leadData: LeadData | undefined = JSON.parse(localStorage.getItem("leadData") ?? "")
+    const leadData: LeadData | undefined = JSON.parse(sessionStorage.getItem("leadData") ?? "")
 
     if (!leadData) {
       window.location.reload()
@@ -161,7 +161,7 @@ export default function ChatBubbleWidget() {
   }
 
   const handleFetchMessages = useCallback(async () => {
-    const leadData: LeadData | undefined = JSON.parse(localStorage.getItem("leadData") ?? "")
+    const leadData: LeadData | undefined = JSON.parse(sessionStorage.getItem("leadData") ?? "")
 
     if (!leadData) {
       window.location.reload()
@@ -227,12 +227,15 @@ export default function ChatBubbleWidget() {
       }
       const enrichedData = { ...data, location }
       const response = await createLead(enrichedData)
-      localStorage.setItem("leadData", JSON.stringify(response))
+      sessionStorage.setItem("leadData", JSON.stringify(response))
       setFormSubmitted(true)
     } catch (error) {
       console.error("Error submitting form:", error)
     }
   }
+
+  console.log(sessionStorage.getItem("leadData"))
+  console.log("formSubmitted", formSubmitted)
 
   return (
     <div>
