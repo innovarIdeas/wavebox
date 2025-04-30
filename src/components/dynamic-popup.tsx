@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { PopupTemplate, Popup } from "@/lib/types"
 import { Dialog, DialogContent } from "./ui/dialog"
 import { PopupSettingsSchema } from "@/lib/dtos"
+import PopupComponent from "./popup-component"
 
 interface DynamicPopupProps {
   popup: {
@@ -187,6 +188,8 @@ export function DynamicPopup({ popup, onClose }: DynamicPopupProps) {
     }
   }
 
+  if(!popup) return null
+
   // If using Dialog component for center position
   if (settings.position === "center") {
     return (
@@ -211,24 +214,17 @@ export function DynamicPopup({ popup, onClose }: DynamicPopupProps) {
                 <span className="sr-only">Close</span>
               </Button>
             )}
-            <div className="flex flex-col gap-4">
-              {/* {popup.content.elements.map((element) => (
-                <PopupElementRenderer key={element.id} element={element} />
-              ))} */}
-              <p>html here</p>
-            </div>
+            <PopupComponent {...popup.content.props} />
           </div>
         </DialogContent>
       </Dialog>
     )
   }
 
-  // For other positions, use fixed positioning
   if (!isVisible) return null
 
   return (
     <>
-      {/* Overlay */}
       {settings.showOverlay && (
         <div
           className="fixed inset-0 bg-black/50 animate-in fade-in duration-200"
@@ -237,7 +233,6 @@ export function DynamicPopup({ popup, onClose }: DynamicPopupProps) {
         />
       )}
 
-      {/* Popup */}
       <div
         className={cn("fixed max-w-md w-full p-6 rounded-lg shadow-lg", getPositionClasses(), getAnimationClasses())}
         style={{
@@ -245,7 +240,7 @@ export function DynamicPopup({ popup, onClose }: DynamicPopupProps) {
           zIndex: settings.zIndex || 9999,
         }}
       >
- 
+        <PopupComponent {...popup.content.props} />
       </div>
     </>
   )
