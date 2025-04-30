@@ -19,73 +19,6 @@ interface DynamicPopupProps {
   onAction?: (actionType: string, data?: Popup) => void
 }
 
-// const PopupElementRenderer = ({ element }: { element: PopupElement }) => {
-//   switch (element.type) {
-//     case "heading":
-//       return (
-//         <h2
-//           style={element.style}
-//           className={cn("text-2xl font-bold", element.properties?.className)}
-//           dangerouslySetInnerHTML={{ __html: element.content || "" }}
-//         />
-//       )
-//     case "paragraph":
-//       return (
-//         <p
-//           style={element.style}
-//           className={cn("text-base", element.properties?.className)}
-//           dangerouslySetInnerHTML={{ __html: element.content || "" }}
-//         />
-//       )
-//     case "image":
-//       return (
-//         <img
-//           src={element.properties?.src || "/placeholder.svg?height=200&width=400"}
-//           alt={element.properties?.alt || ""}
-//           style={element.style}
-//           className={cn("max-w-full h-auto", element.properties?.className)}
-//         />
-//       )
-//     case "button":
-//       return (
-//         <Button
-//           style={element.style}
-//           className={cn(element.properties?.className)}
-//           variant={element.properties?.variant || "default"}
-//           size={element.properties?.size || "default"}
-//         >
-//           {element.content}
-//         </Button>
-//       )
-//     case "input":
-//       return (
-//         <input
-//           type={element.properties?.type || "text"}
-//           placeholder={element.properties?.placeholder || ""}
-//           style={element.style}
-//           className={cn(
-//             "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primaryTheme-500",
-//             element.properties?.className,
-//           )}
-//         />
-//       )
-//     case "divider":
-//       return <hr style={element.style} className={cn("my-4", element.properties?.className)} />
-//     case "spacer":
-//       return (
-//         <div
-//           style={{
-//             height: element.properties?.height || "1rem",
-//             ...element.style,
-//           }}
-//           className={element.properties?.className}
-//         />
-//       )
-//     default:
-//       return <div>Unknown element type: {element.type}</div>
-//   }
-// }
-
 export function DynamicPopup({ popup, onClose }: DynamicPopupProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [hasShown, setHasShown] = useState(false)
@@ -263,7 +196,6 @@ export function DynamicPopup({ popup, onClose }: DynamicPopupProps) {
           style={{
             maxWidth: "90vw",
             width: "auto",
-            backgroundColor: popup.content.background || "#ffffff",
             zIndex: settings.zIndex || 9999,
           }}
         >
@@ -309,27 +241,11 @@ export function DynamicPopup({ popup, onClose }: DynamicPopupProps) {
       <div
         className={cn("fixed max-w-md w-full p-6 rounded-lg shadow-lg", getPositionClasses(), getAnimationClasses())}
         style={{
-          backgroundColor: popup.content.background || "#ffffff",
+          backgroundColor: "#ffffff",
           zIndex: settings.zIndex || 9999,
         }}
       >
-        {settings.showCloseButton && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 h-8 w-8 rounded-full"
-            onClick={handleClose}
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </Button>
-        )}
-        <div className="flex flex-col gap-4">
-          {/* {popup.content.elements.map((element) => (
-            <PopupElementRenderer key={element.id} element={element} />
-          ))} */}
-          <p>html here</p>
-        </div>
+ 
       </div>
     </>
   )

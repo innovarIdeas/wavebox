@@ -38,10 +38,42 @@ export interface PopupElement {
   style?: Record<string, string>;
 }
 
+export interface PopupViewProps {
+  title: string;
+  description: string;
+  mediaSrc?: string;
+  mediaType?: "image" | "video";
+  buttonText: string;
+  onButtonClick?: () => void;
+  onClose?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
+  onSelectElementById?: (id: string) => void;
+  imagePosition?: "left" | "right";
+  isOpen?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+  containerClassName?: string;
+  containerStyle?: React.CSSProperties;
+  imageWrapperClassName?: string;
+  imageClassName?: string;
+  videoClassName?: string;
+  contentWrapperClassName?: string;
+  contentWrapperStyle?: React.CSSProperties;
+  titleClassName?: string;
+  descriptionClassName?: string;
+  buttonClassName?: string;
+  buttonTextClassName?: string;
+  closeButtonClassName?: string;
+  metadata?: PopupSettingsSchema;
+  type?: "builder" | "preview" | "live";
+}
+
 export interface PopupTemplate {
   id: string;
-  elements: PopupElement[];
-  background: string;
+  name: string;
+  description?: string;
+  props: PopupViewProps;
+  isBlank?: boolean;
 }
 
 export interface Popup {
