@@ -1,9 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { X } from "lucide-react"
 import { cn, getPopupSettings } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { PopupTemplate, Popup } from "@/lib/types"
 import { Dialog, DialogContent } from "./ui/dialog"
 import { PopupSettingsSchema } from "@/lib/dtos"
@@ -203,18 +201,7 @@ export function DynamicPopup({ popup, onClose }: DynamicPopupProps) {
           }}
         >
           <div className="relative p-6">
-            {settings.showCloseButton && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 h-8 w-8 rounded-full"
-                onClick={handleClose}
-              >
-                <X className="h-4 w-4" />
-                <span className="sr-only">Close</span>
-              </Button>
-            )}
-            <PopupComponent {...popup.content.props} />
+            <PopupComponent {...popup.content.props} onClose={handleClose}/>
           </div>
         </DialogContent>
       </Dialog>
@@ -234,13 +221,13 @@ export function DynamicPopup({ popup, onClose }: DynamicPopupProps) {
       )}
 
       <div
-        className={cn("fixed max-w-md w-full p-6 rounded-lg shadow-lg", getPositionClasses(), getAnimationClasses())}
+        className={cn("fixed w-auto p-6 rounded-lg shadow-lg", getPositionClasses(), getAnimationClasses())}
         style={{
           backgroundColor: "#ffffff",
           zIndex: settings.zIndex || 9999,
         }}
       >
-        <PopupComponent {...popup.content.props} />
+        <PopupComponent {...popup.content.props} onClose={handleClose}/>
       </div>
     </>
   )

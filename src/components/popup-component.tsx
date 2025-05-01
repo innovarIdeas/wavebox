@@ -40,7 +40,10 @@ const PopupComponent: React.FC<PopupViewProps> = ({
     onButtonClick?.();
   };
 
-  const effectiveMediaType = type === "builder" || type === "preview" ? (mediaType ?? "image") : mediaType;
+  const buttonLink = `${import.meta.env.VITE_API_BASE_URL}/locale/leads` 
+
+  const effectiveMediaType =
+    type === "builder" || type === "preview" ? mediaType ?? "image" : mediaType;
 
   const handleClick = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -59,7 +62,7 @@ const PopupComponent: React.FC<PopupViewProps> = ({
       )}
       style={style}
       onClick={handleClick}
-      id='popup-container'
+      id="popup-container"
     >
       <div
         className={cn(
@@ -70,19 +73,23 @@ const PopupComponent: React.FC<PopupViewProps> = ({
           }
         )}
         style={containerStyle}
-        id='popup-container-inner'
+        id="popup-container-inner"
       >
-        {(type === "builder" || type === "preview" || metadata?.showCloseButton !== false) && (
+        {(type === "builder" ||
+          type === "preview" ||
+          metadata?.showCloseButton !== false) && (
           <button
             onClick={handleClose}
             className={cn(
-              `absolute ${imagePosition === "left" ? "right-2" : "left-2"} top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-opacity-50 transition-colors hover:bg-opacity-70`,
+              `absolute ${
+                imagePosition === "left" ? "right-2" : "left-2"
+              } top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-opacity-50 transition-colors hover:bg-opacity-70`,
               closeButtonClassName
             )}
-            aria-label='Close'
-            id='popup-close-button'
+            aria-label="Close"
+            id="popup-close-button"
           >
-            <X className='h-3 w-3 text-white' />
+            <X className="h-3 w-3 text-white" />
           </button>
         )}
 
@@ -96,12 +103,12 @@ const PopupComponent: React.FC<PopupViewProps> = ({
             {effectiveMediaType === "image" ? (
               <img
                 src={mediaSrc}
-                alt=''
+                alt=""
                 className={cn("h-full w-full object-cover", imageClassName)}
                 width={500}
                 height={500}
-                loading='lazy'
-                id='popup-image'
+                loading="lazy"
+                id="popup-image"
               />
             ) : (
               <video
@@ -111,7 +118,7 @@ const PopupComponent: React.FC<PopupViewProps> = ({
                 autoPlay
                 muted
                 loop
-                id='popup-video'
+                id="popup-video"
               />
             )}
           </div>
@@ -124,23 +131,40 @@ const PopupComponent: React.FC<PopupViewProps> = ({
             contentWrapperClassName
           )}
           style={contentWrapperStyle}
-          id='popup-content-wrapper'
+          id="popup-content-wrapper"
         >
-          <h2 className={cn("mb-4 text-lg font-bold tracking-tight md:text-xl", titleClassName)} id='popup-title'>
+          <h2
+            className={cn(
+              "mb-4 text-lg font-bold tracking-tight md:text-xl",
+              titleClassName
+            )}
+            id="popup-title"
+          >
             {title}
           </h2>
-          <p className={cn("mb-4 text-sm md:text-base", descriptionClassName)} id='popup-description'>
+          <p
+            className={cn("mb-4 text-sm md:text-base", descriptionClassName)}
+            id="popup-description"
+          >
             {description}
           </p>
-          <Button
-            onClick={handleButtonClick}
-            className={cn("flex w-full self-center rounded-full", buttonClassName)}
-            id='popup-button'
-          >
-            <span className={cn("text-white", buttonTextClassName)} id='popup-button-text'>
-              {buttonText}
-            </span>
-          </Button>
+          <a href={buttonLink} target="_blank" rel="noopener noreferrer">
+            <Button
+              onClick={handleButtonClick}
+              className={cn(
+                "flex w-full self-center rounded-full",
+                buttonClassName
+              )}
+              id="popup-button"
+            >
+              <span
+                className={cn("text-white", buttonTextClassName)}
+                id="popup-button-text"
+              >
+                {buttonText}
+              </span>
+            </Button>
+          </a>
         </div>
       </div>
     </div>

@@ -67,6 +67,7 @@ export function PopupProvider({ path, children }: PopupProviderProps) {
         }
 
         const popups = await fetchActivePopups(fetchParams)
+        console.log("Active popups:", popups);
         setActivePopups(popups)
       } catch (error) {
         console.error("Failed to fetch active popups:", error)
@@ -79,16 +80,13 @@ export function PopupProvider({ path, children }: PopupProviderProps) {
     getActivePopups()
   }, [path, isMobile, isNewVisitor])
 
-  // Show popups one at a time
   useEffect(() => {
     if (activePopups.length > 0 && currentPopupIndex === null && !isLoading) {
       setCurrentPopupIndex(0)
     }
   }, [activePopups, currentPopupIndex, isLoading])
 
-  // Handle popup close
   const handlePopupClose = () => {
-    // Move to the next popup if available
     if (currentPopupIndex !== null && currentPopupIndex < activePopups.length - 1) {
       setCurrentPopupIndex(currentPopupIndex + 1)
     } else {
@@ -105,7 +103,6 @@ export function PopupProvider({ path, children }: PopupProviderProps) {
           popup={activePopups[currentPopupIndex]}
           onClose={handlePopupClose}
           onAction={(actionType, data) => {
-            // Handle popup actions (e.g., form submissions, button clicks)
             console.log("Popup action:", actionType, data)
           }}
         />
