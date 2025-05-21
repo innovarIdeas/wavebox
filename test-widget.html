@@ -7,10 +7,19 @@
 <body>
   <h1>Wavebox Widget Local Test</h1>
 
+  <script>
+    console.log('Loading widget...');
+    window.addEventListener('error', (event) => {
+      console.error('Script error:', event);
+    });
+  </script>
+
   <script 
-    src="./dist/widget.js" 
+    src="./dist/widget/widget.js" 
     data-slug="schoolwave"
     defer
+    onerror="console.error('Failed to load widget script')"
+    onload="console.log('Widget script loaded successfully')"
   ></script>
 </body>
 </html>
