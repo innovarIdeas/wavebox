@@ -14,9 +14,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:widget": "tsc -p tsconfig.widget.json && vite build --config vite.widget.config.ts && node scripts/copy-widget.cjs",
+    "build:all": "npm run build && npm run build:widget",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run build:all",
     "serve:widget": "npm run build:widget && npx serve ."
   },
   "keywords": [
