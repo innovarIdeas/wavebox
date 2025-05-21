@@ -12,11 +12,12 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && vite build --config vite.widget.config.ts",
-    "build:widget": "vite build --config vite.widget.config.ts",
+    "build": "tsc -b && vite build",
+    "build:widget": "tsc -p tsconfig.widget.json && vite build --config vite.widget.config.ts && node scripts/copy-widget.cjs",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "serve:widget": "npm run build:widget && npx serve ."
   },
   "keywords": [
     "chat",
@@ -26,7 +27,7 @@
     "component",
     "typescript"
   ],
-  "author": "Victor Chiaka",
+  "author": "Victor Chiaka, Ajayi Olalekan",
   "repository": {
     "type": "git",
     "url": "https://github.com/innovarIdeas/wavebox.git"
@@ -76,6 +77,7 @@
     "tailwindcss": "^3.4.17",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "vite-plugin-node-polyfills": "^0.23.0"
   }
 }

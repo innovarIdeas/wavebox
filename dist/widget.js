@@ -1,18 +1,32 @@
+"use strict";
+// Initialize the chatbot slug globally
+window.__CHATBOT_SLUG__ = undefined;
 (function () {
-    const script = document.currentScript;
-    const slug = script?.getAttribute("data-slug");
-  
-    if (!slug) {
-      console.error("Chatbot Widget: Missing `data-slug`.");
-      return;
+    console.log("Widget loader initializing...");
+    // Look for the script with data-slug attribute
+    const scripts = document.querySelectorAll('script');
+    let slug = null;
+    // Check all scripts for data-slug
+    for (let i = 0; i < scripts.length; i++) {
+        const scriptSlug = scripts[i].getAttribute('data-slug');
+        if (scriptSlug) {
+            slug = scriptSlug;
+            break;
+        }
     }
-  
+    if (!slug) {
+        console.error("Chatbot Widget: Missing `data-slug`.");
+        return;
+    }
+    console.log("Found slug:", slug);
+    // Set the slug globally so the widget can access it
     window.__CHATBOT_SLUG__ = slug;
-  
+    const cssLink = document.createElement("link");
+    cssLink.rel = "stylesheet";
+    cssLink.href = "./dist/widget/wavebox.css";
+    document.head.appendChild(cssLink);
     // Inject React widget bundle
     const chatbotScript = document.createElement("script");
-    chatbotScript.src = "https://your-cdn.com/chatbot-widget.iife.js"; // Replace with your CDN path
-    chatbotScript.async = true;
+    chatbotScript.src = "./dist/widget/chatbot-widget.iife.js";
     document.body.appendChild(chatbotScript);
-  })();
-  
+})();
