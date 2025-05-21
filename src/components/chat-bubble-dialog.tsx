@@ -79,14 +79,13 @@ const playNotificationSound = async (audioElement: HTMLAudioElement | null) => {
   }
 };
 
-export default function ChatBubbleWidget() {
+export default function ChatBubbleDialog({ slug }: { slug?: string }) {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState("")
   const [formSubmitted, setFormSubmitted] = useState(!!sessionStorage.getItem("leadData"))
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [previousMessageCount, setPreviousMessageCount] = useState(0)
   const [isNewMessage, setIsNewMessage] = useState(false)
-  const [slug, setSlug] = useState<string>("");
   const [responderId, setResponderId] = useState<string>("");
   const bottomRef = useRef<HTMLDivElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -104,12 +103,6 @@ export default function ChatBubbleWidget() {
     { id: "9", text: "Is there a free trial available?" },
     { id: "10", text: "Can you help with migration?" },
   ]
-
-  useEffect(() => {
-    const url = new URL(window.location.href)
-    const slugFromUrl = url.searchParams.get("slug") ?? ""
-    setSlug(slugFromUrl)
-  }, [])
 
   const form = useForm<z.infer<typeof leadSchema>>({
     resolver: zodResolver(leadSchema),
@@ -244,7 +237,7 @@ export default function ChatBubbleWidget() {
       const enrichedData = { 
         ...data, 
         location,
-        slug // Always use the slug from URL parameter
+        slug
       }
       
       console.log("Submitting form with organization slug:", enrichedData.slug);
@@ -252,14 +245,6 @@ export default function ChatBubbleWidget() {
       const response = await createLead(enrichedData);
       sessionStorage.setItem("leadData", JSON.stringify(response));
       setFormSubmitted(true);
-      
-      // Notify parent window that form was submitted successfully
-      if (window.parent !== window) {
-        window.parent.postMessage({ 
-          type: 'wavebox_form_submitted',
-          slug: slug
-        }, '*');
-      }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
