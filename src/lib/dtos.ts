@@ -8,7 +8,8 @@ export const leadSchema = z.object({
   email: z
     .string().email(),
   location: z.string().optional(),
-  source: z.string().optional()
+  source: z.string().optional(),
+  slug: z.string()
 });
 
 export type LeadSchema = z.infer<typeof leadSchema>;

@@ -86,6 +86,7 @@ export default function ChatBubbleWidget() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [previousMessageCount, setPreviousMessageCount] = useState(0)
   const [isNewMessage, setIsNewMessage] = useState(false)
+  const [slug, setSlug] = useState<string>("");
   const [responderId, setResponderId] = useState<string>("");
   const bottomRef = useRef<HTMLDivElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -104,6 +105,12 @@ export default function ChatBubbleWidget() {
     { id: "10", text: "Can you help with migration?" },
   ]
 
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    const slugFromUrl = url.searchParams.get("slug") ?? ""
+    setSlug(slugFromUrl)
+  }, [])
+
   const form = useForm<z.infer<typeof leadSchema>>({
     resolver: zodResolver(leadSchema),
     defaultValues: {
@@ -111,6 +118,7 @@ export default function ChatBubbleWidget() {
       email: "",
       phoneNumber: "",
       source: "WaveBox",
+      slug: ""
     },
     mode: "onChange",
   })
@@ -215,6 +223,7 @@ export default function ChatBubbleWidget() {
 
   const onSubmit = async (data: LeadSchema) => {
     try {
+      // Get location if available
       let location = "Location not available"
       try {
         const geoResult = await getCurrentLocation()
@@ -225,17 +234,36 @@ export default function ChatBubbleWidget() {
           geoError instanceof Error ? geoError.message : String(geoError),
         )
       }
-      const enrichedData = { ...data, location }
-      const response = await createLead(enrichedData)
-      sessionStorage.setItem("leadData", JSON.stringify(response))
-      setFormSubmitted(true)
+      
+      // Make sure the slug from URL is included in the form data
+      if (!slug) {
+        console.error("No slug available. Cannot submit form without organization slug.");
+        return;
+      }
+      
+      const enrichedData = { 
+        ...data, 
+        location,
+        slug // Always use the slug from URL parameter
+      }
+      
+      console.log("Submitting form with organization slug:", enrichedData.slug);
+      
+      const response = await createLead(enrichedData);
+      sessionStorage.setItem("leadData", JSON.stringify(response));
+      setFormSubmitted(true);
+      
+      // Notify parent window that form was submitted successfully
+      if (window.parent !== window) {
+        window.parent.postMessage({ 
+          type: 'wavebox_form_submitted',
+          slug: slug
+        }, '*');
+      }
     } catch (error) {
-      console.error("Error submitting form:", error)
+      console.error("Error submitting form:", error);
     }
   }
-
-  console.log(sessionStorage.getItem("leadData"))
-  console.log("formSubmitted", formSubmitted)
 
   return (
     <div>
