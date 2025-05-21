@@ -10,6 +10,8 @@
   const container = document.createElement("div");
   container.id = "chatbot-widget-container";
   container.style.position = "fixed";
+  container.style.background = "transparent";
+  container.style.backgroundColor = "transparent";
   container.style.bottom = "0";
   container.style.left = "0";
   container.style.width = "100vw";
@@ -26,6 +28,7 @@
   iframe.height = "100%";
   iframe.style.border = "none";
   iframe.style.backgroundColor = "transparent";
+  iframe.style.background = "transparent";
   iframe.style.pointerEvents = "auto";
   iframe.setAttribute("allowtransparency", "true");
 
