@@ -10,7 +10,7 @@ window.__CHATBOT_SLUG__ = undefined;
     // Check all scripts for data-slug and determine base URL
     for (let i = 0; i < scripts.length; i++) {
         const script = scripts[i];
-        const scriptSlug = script.getAttribute('data-slug');
+        const scriptSlug = script.getAttribute("data-slug");
         if (scriptSlug && script.src.includes('widget.js')) {
             slug = scriptSlug;
             // Extract base URL from the script src
