@@ -12,13 +12,36 @@ function initializeWidget() {
     return;
   }
 
-  const containerId = "chatbot-widget-root";
-  let container = document.getElementById(containerId);
+  // Try to find the shadow root container
+  const shadowHost = document.getElementById("chatbot-widget-shadow-root-container");
+  const shadowRoot = shadowHost && shadowHost.shadowRoot ? shadowHost.shadowRoot : undefined;
 
-  if (!container) {
-    container = document.createElement("div");
-    container.id = containerId;
-    document.body.appendChild(container);
+  // Use shadow root as the document for the widget
+  const containerId = "chatbot-widget-root";
+  let container: HTMLElement | null = null;
+  if (shadowRoot) {
+    container = shadowRoot.getElementById(containerId);
+    if (!container) {
+      container = document.createElement("div");
+      container.id = containerId;
+      container.style.width = "100%";
+      container.style.height = "100%";
+      container.style.position = "relative";
+      container.style.pointerEvents = "auto";
+      shadowRoot.appendChild(container);
+    }
+  } else {
+    // fallback for non-shadow (should not happen in widget)
+    container = document.getElementById(containerId);
+    if (!container) {
+      container = document.createElement("div");
+      container.id = containerId;
+      container.style.width = "100%";
+      container.style.height = "100%";
+      container.style.position = "relative";
+      container.style.pointerEvents = "auto";
+      document.body.appendChild(container);
+    }
   }
 
   console.log("Rendering chatbot with slug:", slug);
