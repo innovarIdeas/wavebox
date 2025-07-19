@@ -11,12 +11,17 @@ interface CustomWindow extends Window {
   // Look for the script with data-slug attribute
   const scripts = document.querySelectorAll('script');
   let slug = null;
+  let baseUrl = "";
   
-  // Check all scripts for data-slug
+  // Check all scripts for data-slug and determine base URL
   for (let i = 0; i < scripts.length; i++) {
-    const scriptSlug = scripts[i].getAttribute('data-slug');
-    if (scriptSlug) {
+    const script = scripts[i];
+    const scriptSlug = script.getAttribute("data-slug");
+
+    if (scriptSlug && script.src.includes('widget.js')) {
       slug = scriptSlug;
+      // Extract base URL from the script src
+      baseUrl = script.src.substring(0, script.src.lastIndexOf('/') + 1);
       break;
     }
   }
@@ -33,11 +38,11 @@ interface CustomWindow extends Window {
 
   const cssLink = document.createElement("link")
   cssLink.rel = "stylesheet"
-  cssLink.href = "./dist/widget/wavebox.css"
+  cssLink.href = `${baseUrl}wavebox.css`
   document.head.appendChild(cssLink)
 
   // Inject React widget bundle
   const chatbotScript = document.createElement("script");
-  chatbotScript.src = "./dist/widget/chatbot-bundle.js";
+  chatbotScript.src = `${baseUrl}chatbot-bundle.js`;
   document.body.appendChild(chatbotScript);
 })();
