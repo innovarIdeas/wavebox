@@ -75,6 +75,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+    outputs:
+      image_name: ${{ steps.image_name.outputs.value }}
 
   test-container:
     needs: docker
@@ -84,11 +86,11 @@ jobs:
       
       - name: Pull Docker image
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ steps.image_name.outputs.value }}:latest
+          docker pull ${{ env.REGISTRY }}/${{ needs.docker.outputs.image_name }}:latest
           
       - name: Run container tests
         run: |
-          docker run -d -p 8080:80 --name wavebox-test ${{ env.REGISTRY }}/${{ steps.image_name.outputs.value }}:latest
+          docker run -d -p 8080:80 --name wavebox-test ${{ env.REGISTRY }}/${{ needs.docker.outputs.image_name }}:latest
           sleep 10
           curl -f http://localhost:8080 || exit 1
           docker stop wavebox-test
