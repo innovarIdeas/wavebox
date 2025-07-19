@@ -1,69 +1,122 @@
-# Wavebox Chat Widget Usage Guide
+# Wavebox Widget Integration Guide
 
-## Installation
+This guide explains how to embed the Wavebox widget into your own website or application. You can use it in both plain HTML projects and React (or other modern JS frameworks) projects.
 
-### Method 1: Direct Script Integration (Recommended for websites)
+---
 
-1. Include the widget script in your HTML:
+## 1. Requirements
+
+- The widget script (`widget.js`) must be accessible from your host site. You can:
+  - Use the provided `dist/widget/widget.js` directly if self-hosting
+  - Or upload it to your own CDN/server
+- You must provide a `data-slug` attribute to configure the widget for your use case (e.g., `schoolwave`).
+
+---
+
+## 2. Usage in a Plain HTML Project
+
+1. **Copy the Widget Script**
+   - Place `widget.js` somewhere accessible in your project (e.g., `/dist/widget/widget.js`).
+
+2. **Add the Script Tag**
+   - Insert the following into your HTML, just before the closing `</body>` tag:
 
 ```html
-<script src="https://your-cdn-or-github-pages/dist/widget/widget.js" data-slug="your-chatbot-slug"></script>
+<!-- The widget script with required data-slug attribute -->
+<script src="/path/to/widget.js" data-slug="schoolwave"></script>
+```
+- Replace `/path/to/widget.js` with the actual path where you host the script.
+- Change `data-slug` to your own identifier if needed.
+
+3. **Done!**
+- The widget will automatically initialize and appear on your site.
+
+---
+
+## 3. Usage in a React Project
+
+You can add the widget to any React app (Create React App, Vite, Next.js, etc.) by dynamically injecting the script.
+
+### Option 1: Add to `public/index.html`
+
+1. Copy `widget.js` to your `public` folder or host it elsewhere.
+2. Add this to your `public/index.html`:
+
+```html
+<script src="/widget.js" data-slug="schoolwave"></script>
 ```
 
-The `data-slug` attribute is required and identifies your specific chatbot instance.
+### Option 2: Dynamically Load in a Component
 
-### Method 2: NPM Package Integration (For React applications)
-
-1. Install the package:
-
-```bash
-npm install wavebox
-# or
-yarn add wavebox
-```
-
-2. Use the component in your React application:
+If you want to load the widget only on certain pages/components:
 
 ```jsx
-import { ChatBubbleDialog } from 'wavebox';
+import { useEffect } from "react";
+
+export default function WaveboxWidget() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "/path/to/widget.js";
+    script.setAttribute("data-slug", "schoolwave");
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+  return null; // or a placeholder if you wish
+}
+```
+- Place `<WaveboxWidget />` in your component tree where you want the widget to load.
+
+---
+
+## 4. Configuration
+
+- **data-slug**: Required. Identifies the widget instance/use case (e.g., `schoolwave`).
+- You may add more data attributes in the future for further customization.
+
+---
+
+## 5. Troubleshooting
+
+- Ensure the script path is correct and accessible from your site.
+- Only one instance of the widget should be loaded per page.
+- If you update the widget, clear your browser cache or use a versioned file name.
+
+---
+
+## 6. Example
+
+### HTML Example
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wavebox Widget Demo</title>
+</head>
+<body>
+  <!-- Your site content -->
+  <script src="/dist/widget/widget.js" data-slug="schoolwave"></script>
+</body>
+</html>
+```
+
+### React Example
+```jsx
+import WaveboxWidget from "./WaveboxWidget";
 
 function App() {
   return (
     <div>
-      {/* Your other components */}
-      <ChatBubbleDialog slug="your-chatbot-slug" />
+      {/* Your app content */}
+      <WaveboxWidget />
     </div>
   );
 }
 ```
 
-## Configuration
+---
 
-### Customization Options
-
-The widget can be customized with the following attributes:
-
-```html
-<script 
-  src="https://your-cdn-or-github-pages/dist/widget/widget.js" 
-  data-slug="your-chatbot-slug"
-></script>
-```
-
-## Development
-
-To develop the widget locally:
-
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Run the development server: `npm run dev`
-4. Build the widget: `npm run build:widget`
-5. Test the widget: `npm run serve:widget`
-
-## Troubleshooting
-
-If the chatbot doesn't appear:
-
-1. Check the console for errors
-2. Verify that the `data-slug` attribute is correctly set
-3. Make sure the paths to the widget files are correct 
+For advanced usage or issues, see the source code or contact the maintainer. 
