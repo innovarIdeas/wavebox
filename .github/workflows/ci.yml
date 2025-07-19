@@ -44,6 +44,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Set lowercase image name
+        id: image_name
+        run: echo "value=${IMAGE_NAME,,}" >> $GITHUB_OUTPUT
+        env:
+          IMAGE_NAME: ${{ github.repository }}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -55,7 +64,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ steps.image_name.outputs.value }}
           
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -66,7 +75,9 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          
+    outputs:
+      image_name: ${{ steps.image_name.outputs.value }}
+
   test-container:
     needs: docker
     runs-on: ubuntu-latest
@@ -75,11 +86,11 @@ jobs:
       
       - name: Pull Docker image
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker pull ${{ env.REGISTRY }}/${{ needs.docker.outputs.image_name }}:latest
           
       - name: Run container tests
         run: |
-          docker run -d -p 8080:80 --name wavebox-test ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker run -d -p 8080:80 --name wavebox-test ${{ env.REGISTRY }}/${{ needs.docker.outputs.image_name }}:latest
           sleep 10
           curl -f http://localhost:8080 || exit 1
           docker stop wavebox-test

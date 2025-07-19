@@ -25,12 +25,46 @@ window.__CHATBOT_SLUG__ = undefined;
     console.log("Found slug:", slug);
     // Set the slug globally so the widget can access it
     window.__CHATBOT_SLUG__ = slug;
-    const cssLink = document.createElement("link");
-    cssLink.rel = "stylesheet";
-    cssLink.href = `${baseUrl}wavebox.css`;
-    document.head.appendChild(cssLink);
-    // Inject React widget bundle
-    const chatbotScript = document.createElement("script");
-    chatbotScript.src = `${baseUrl}chatbot-bundle.js`;
-    document.body.appendChild(chatbotScript);
+    // Create a container for the widget and attach shadow root
+    const containerId = "chatbot-widget-shadow-root-container";
+    let container = document.getElementById(containerId);
+    if (!container) {
+        container = document.createElement("div");
+        container.id = containerId;
+        // Ensure the container covers the viewport for popups/modals
+        container.style.position = "fixed";
+        container.style.top = "0";
+        container.style.left = "0";
+        container.style.width = "100vw";
+        container.style.height = "100vh";
+        container.style.zIndex = "2147483647"; // max z-index for overlays
+        container.style.pointerEvents = "none"; // let widget manage pointer events
+        document.body.appendChild(container);
+    }
+    // Attach shadow root if not already present
+    let shadowRoot = container.shadowRoot;
+    if (!shadowRoot) {
+        shadowRoot = container.attachShadow({ mode: "open" });
+    }
+    // Fetch and inject CSS into shadow root
+    fetch(`${baseUrl}wavebox.css`)
+        .then((resp) => resp.text())
+        .then((cssText) => {
+        let styleTag = shadowRoot.querySelector('style[data-wavebox]');
+        if (!styleTag) {
+            styleTag = document.createElement('style');
+            styleTag.setAttribute('data-wavebox', 'true');
+            shadowRoot.appendChild(styleTag);
+        }
+        styleTag.textContent = cssText;
+        // Inject React widget bundle into shadow root
+        let widgetScript = shadowRoot.querySelector('script[data-wavebox]');
+        if (!widgetScript) {
+            widgetScript = document.createElement('script');
+            widgetScript.setAttribute('data-wavebox', 'true');
+            widgetScript.type = 'module';
+            widgetScript.src = `${baseUrl}chatbot-bundle.js`;
+            shadowRoot.appendChild(widgetScript);
+        }
+    });
 })();

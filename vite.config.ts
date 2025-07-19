@@ -78,11 +78,12 @@ const widgetConfig = {
     emptyOutDir: false,
     cssCodeSplit: false,
     rollupOptions: {
-      treeshake: true,
+      treeshake: false, // Disable tree-shaking to keep all CSS
       output: {
         inlineDynamicImports: true,
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'style.css') return 'chatbot-widget.css';
+          // Always output as wavebox.css for any CSS asset
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) return 'wavebox.css';
           return assetInfo.name;
         },
       },
